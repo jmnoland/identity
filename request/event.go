@@ -1,18 +1,14 @@
-package model
+package request
 
 import (
     "github.com/google/uuid"
-    "time"
 )
 
-type Event struct {
-    ID uuid.UUID
+type EventRequest struct {
     Application string
     Action string
     Type string
     Request string
     ActionRequestId uuid.UUID
-
-    CreatedAt time.Time
 }
 
