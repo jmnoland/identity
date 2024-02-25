@@ -1,6 +1,6 @@
 package model
 
-var Types = map[string]string{
+var Actions = map[string]string{
    "Create": "Create",
    "Update": "Update",
    "Delete": "Delete",
