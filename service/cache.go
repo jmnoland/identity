@@ -7,7 +7,19 @@ import (
 
 var clients = map[uuid.UUID]model.Client{}
 
-func AddClient(client model.Client) {
-    clients[client.ID] = client
+func AddClientCache(client model.Client) {
+    clients[client.ID] = client;
+}
+
+func RemoveClientCache(client model.Client) {
+    delete(clients, client.ID);
+}
+
+func UpdateClientCache(client model.Client) {
+    clients[client.ID] = client;
+}
+
+func GetClient(id uuid.UUID) (model.Client) {
+    return clients[id]
 }
 

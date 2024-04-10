@@ -11,5 +11,6 @@ type Client struct {
     Name string
 
     CreatedAt time.Time
+    ModifiedAt time.Time
 }
 

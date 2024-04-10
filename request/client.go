@@ -12,3 +12,18 @@ type CreateClientRequest struct {
     ClientName string
 }
 
+type UpdateClientRequest struct {
+    Application string
+    RequestId uuid.UUID
+
+    ClientId uuid.UUID
+    ClientName string
+}
+
+type DeleteClientRequest struct {
+    Application string
+    RequestId uuid.UUID
+
+    ClientId uuid.UUID
+}
+
