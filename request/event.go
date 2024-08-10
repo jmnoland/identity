@@ -5,10 +5,10 @@ import (
 )
 
 type EventRequest struct {
-    Application string
-    Action string
-    Type string
-    Request string
+    Application     string
+    Action          string
+    Type            string
+    Request         any
     ActionRequestId uuid.UUID
 }
 

@@ -16,7 +16,7 @@ var database = os.Getenv("MONGO_DB_NAME")
 var serverAPI = options.ServerAPI(options.ServerAPIVersion1)
 var opts = options.Client().ApplyURI(uri).SetServerAPIOptions(serverAPI)
 
-func GetEvents() {
+func GetEvents() ([]model.Event) {
     client, err := mongo.Connect(context.TODO(), opts)
 
     if err != nil {
@@ -48,7 +48,7 @@ func GetEvents() {
         eventList = append(eventList, result)
 
     }
-    
+    return eventList
 }
 
 func AddEvent(newEvent model.Event) {

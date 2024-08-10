@@ -1,8 +1,8 @@
 package service
 
 import (
+    "time"
     "errors"
-    "github.com/google/uuid"
     "github.com/jmnoland/identity/model"    
     "github.com/jmnoland/identity/request"
 )
@@ -19,7 +19,12 @@ func NewEvent(req request.EventRequest) (*model.Event, error) {
     }
 
     event := model.Event{
-        ID: uuid.New(),
+        Application: req.Application,
+        Action: req.Action,
+        Type: req.Type,
+        Request: req.Request,
+        ActionRequestId: req.ActionRequestId,
+        CreatedAt: time.Now(),
     }
 
     return &event, nil

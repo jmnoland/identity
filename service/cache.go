@@ -23,3 +23,12 @@ func GetClient(id uuid.UUID) (model.Client) {
     return clients[id]
 }
 
+func GetClientByName(name string) (model.Client) {
+    for k, v := range clients {
+        if v.Name == name {
+            return clients[k]
+        }
+    }
+    return model.Client{}
+}
+

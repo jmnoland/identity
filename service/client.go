@@ -1,84 +1,75 @@
 package service
 
 import (
-    "time"
-    "encoding/json"
-    "github.com/google/uuid"
-    "github.com/jmnoland/identity/model"    
-    "github.com/jmnoland/identity/request"
+	"github.com/google/uuid"
+	"github.com/jmnoland/identity/model"
+	"github.com/jmnoland/identity/request"
+    "github.com/jmnoland/identity/repository"
+	"time"
 )
 
-func createEventRequest(reqString []byte, application string, action string, requestId uuid.UUID) (request.EventRequest) {
-    eventReq := request.EventRequest{
-        Application: application,
-        Type: "Client",
-        Action: action,
-        ActionRequestId: requestId,
-        Request: string(reqString),
-    }
+func createEventRequest(req any, application string, action string, requestId uuid.UUID) request.EventRequest {
+	eventReq := request.EventRequest{
+		Application:     application,
+		Type:            "Client",
+		Action:          action,
+		ActionRequestId: requestId,
+		Request:         req,
+	}
 
-    return eventReq
+	return eventReq
 }
 
-func CreateClient(req request.CreateClientRequest) (model.Client) {
-    reqString, err := json.Marshal(req)
-    if err != nil {
-        panic(err)
+func CreateClient(req request.CreateClientRequest) model.ServiceResponse {
+    existingClient := GetClientByName(req.ClientName)
+    if existingClient.Name != "" {
+        return CreateResponse("BADREQUEST", existingClient)
     }
 
-    event := createEventRequest(reqString, req.Application, model.Actions["Create"], req.RequestId)
-    _, err = NewEvent(event)
-    if err != nil {
-        panic(err)
-    }
+	eventReq := createEventRequest(req, req.Application, model.Actions["Create"], req.RequestId)
+	event, err := NewEvent(eventReq)
+	if err != nil {
+		panic(err)
+	}
 
-    client := model.Client{
-        ID: req.ClientId,
-        Name: req.ClientName,
-        Application: req.Application,
-        CreatedAt: time.Now(),
-    }
+	client := model.Client{
+		ID:          req.ClientId,
+		Name:        req.ClientName,
+		Application: req.Application,
+		CreatedAt:   time.Now(),
+	}
 
-    AddClientCache(client)
+	AddClientCache(client)
 
-    return client
+    repository.AddEvent(*event)
+
+	return CreateResponse("CREATED", client)
 }
 
-func UpdateClient(req request.UpdateClientRequest) (model.Client) {
-    reqString, err := json.Marshal(req)
-    if err != nil {
-        panic(err)
-    }
+func UpdateClient(req request.UpdateClientRequest) model.Client {
+	event := createEventRequest(req, req.Application, model.Actions["Update"], req.RequestId)
+    _, err := NewEvent(event)
+	if err != nil {
+		panic(err)
+	}
 
-    event := createEventRequest(reqString, req.Application, model.Actions["Create"], req.RequestId)
-    _, err = NewEvent(event)
-    if err != nil {
-        panic(err)
-    }
+	client := GetClient(req.ClientId)
+	client.Name = req.ClientName
+	client.ModifiedAt = time.Now()
 
-    client := GetClient(req.ClientId)
-    client.Name = req.ClientName
-    client.ModifiedAt = time.Now()
+	UpdateClientCache(client)
 
-    UpdateClientCache(client)
-
-    return client
+	return client
 }
 
 func DeleteClient(req request.DeleteClientRequest) {
-    reqString, err := json.Marshal(req)
-    if err != nil {
-        panic(err)
-    }
+	event := createEventRequest(req, req.Application, model.Actions["Delete"], req.RequestId)
+    _, err := NewEvent(event)
+	if err != nil {
+		panic(err)
+	}
 
-    event := createEventRequest(reqString, req.Application, model.Actions["Delete"], req.RequestId)
-    _, err = NewEvent(event)
-    if err != nil {
-        panic(err)
-    }
+	client := GetClient(req.ClientId)
 
-    client := GetClient(req.ClientId)
-
-    RemoveClientCache(client)
+	RemoveClientCache(client)
 }
-

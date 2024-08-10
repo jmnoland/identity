@@ -2,7 +2,9 @@ package main
 
 import (
     "fmt"
+
     "github.com/gin-gonic/gin"
+    "github.com/jmnoland/identity/controller"
 )
 
 func main() {
@@ -13,7 +15,9 @@ func main() {
             "message": "pong",
         })
     })
+    r.POST("/client", controller.CreateClient)
     fmt.Println("Running");
+
     r.Run()
 }
 

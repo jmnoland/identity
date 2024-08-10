@@ -11,9 +11,9 @@ type Event struct {
     Application     string
     Action          string
     Type            string
-    Request         string
+    Request         any
     ActionRequestId uuid.UUID
 
-    CreatedAt time.Time
+    CreatedAt       time.Time
 }
 

@@ -5,25 +5,25 @@ import (
 )
 
 type CreateClientRequest struct {
-    Application string
-    RequestId uuid.UUID
+    Application     string
+    RequestId       uuid.UUID
 
-    ClientId uuid.UUID
-    ClientName string
+    ClientId        uuid.UUID
+    ClientName      string
 }
 
 type UpdateClientRequest struct {
-    Application string
-    RequestId uuid.UUID
+    Application     string
+    RequestId       uuid.UUID
 
-    ClientId uuid.UUID
-    ClientName string
+    ClientId        uuid.UUID
+    ClientName      string
 }
 
 type DeleteClientRequest struct {
-    Application string
-    RequestId uuid.UUID
+    Application     string
+    RequestId       uuid.UUID
 
-    ClientId uuid.UUID
+    ClientId        uuid.UUID
 }
 
