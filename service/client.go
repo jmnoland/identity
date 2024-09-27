@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func createEventRequest(req any, application string, action string, requestId uuid.UUID) request.EventRequest {
+func createClientEventRequest(req any, application string, action string, requestId uuid.UUID) request.EventRequest {
 	eventReq := request.EventRequest{
 		Application:     application,
 		Type:            "Client",
@@ -26,7 +26,7 @@ func CreateClient(req request.CreateClientRequest) model.ServiceResponse {
         return CreateResponse("BADREQUEST", existingClient)
     }
 
-	eventReq := createEventRequest(req, req.Application, model.Actions["Create"], req.RequestId)
+	eventReq := createClientEventRequest(req, req.Application, model.Actions["Create"], req.RequestId)
 	event, err := NewEvent(eventReq)
 	if err != nil {
 		panic(err)
@@ -47,7 +47,7 @@ func CreateClient(req request.CreateClientRequest) model.ServiceResponse {
 }
 
 func UpdateClient(req request.UpdateClientRequest) model.Client {
-	event := createEventRequest(req, req.Application, model.Actions["Update"], req.RequestId)
+	event := createClientEventRequest(req, req.Application, model.Actions["Update"], req.RequestId)
     _, err := NewEvent(event)
 	if err != nil {
 		panic(err)
@@ -63,7 +63,7 @@ func UpdateClient(req request.UpdateClientRequest) model.Client {
 }
 
 func DeleteClient(req request.DeleteClientRequest) {
-	event := createEventRequest(req, req.Application, model.Actions["Delete"], req.RequestId)
+	event := createClientEventRequest(req, req.Application, model.Actions["Delete"], req.RequestId)
     _, err := NewEvent(event)
 	if err != nil {
 		panic(err)

@@ -5,14 +5,13 @@ import (
     "time"
 )
 
-type Client struct {
+type User struct {
     ID              uuid.UUID
+    ClientId        uuid.UUID
     Application     string
     Name            string
 
     CreatedAt       time.Time
     ModifiedAt      time.Time
-
-    Users           []User
 }
 
