@@ -6,63 +6,63 @@ import (
     "github.com/jmnoland/identity/service"
 )
 
-func CreateClient(c *gin.Context) {
-    var newClient request.CreateClientRequest
+func CreateUser(c *gin.Context) {
+    var newUser request.CreateUserRequest
 
-    if err := c.BindJSON(&newClient); err != nil {
+    if err := c.BindJSON(&newUser); err != nil {
         return
     }
 
-    response := service.CreateClient(newClient)
+    response := service.CreateUser(newUser)
 
     SendResponse(c, response)
 }
 
-func DeleteClient(c *gin.Context) {
-    var removeRequest request.DeleteClientRequest
+func DeleteUser(c *gin.Context) {
+    var removeRequest request.DeleteUserRequest
 
     if err := c.BindJSON(&removeRequest); err != nil {
         return
     }
 
-    response := service.DeleteClient(removeRequest)
-    
+    response := service.DeleteUser(removeRequest)
+
     SendResponse(c, response)
 }
 
-func UpdateClient(c *gin.Context) {
-    var updateRequest request.UpdateClientRequest
+func UpdateUser(c *gin.Context) {
+    var updateRequest request.UpdateUserRequest
 
     if err := c.BindJSON(&updateRequest); err != nil {
         return
     }
 
-    response := service.UpdateClient(updateRequest)
+    response := service.UpdateUser(updateRequest)
 
     SendResponse(c, response)
 }
 
-func GetClient(c *gin.Context) {
-    var getRequest request.GetClientRequest
+func GetUser(c *gin.Context) {
+    var getRequest request.GetUserRequest
 
     if err := c.BindJSON(&getRequest); err != nil {
         return
     }
 
-    client := service.GetClient(getRequest.ClientId)
+    client := service.GetUser(getRequest.ClientId, getRequest.UserId)
     response := service.CreateResponse("FOUND", client)
 
     SendResponse(c, response)
 }
 
-func GetClientByName(c *gin.Context) {
-    var getRequest request.GetClientRequest
+func GetUserByName(c *gin.Context) {
+    var getRequest request.GetUserRequest
 
     if err := c.BindJSON(&getRequest); err != nil {
         return
     }
 
-    client := service.GetClientByName(getRequest.ClientName)
+    client := service.GetUserByName(getRequest.ClientId, getRequest.UserName)
     response := service.CreateResponse("FOUND", client)
 
     SendResponse(c, response)

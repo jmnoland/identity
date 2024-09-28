@@ -46,7 +46,7 @@ func CreateClient(req request.CreateClientRequest) model.ServiceResponse {
 	return CreateResponse("CREATED", client)
 }
 
-func UpdateClient(req request.UpdateClientRequest) model.Client {
+func UpdateClient(req request.UpdateClientRequest) model.ServiceResponse {
 	event := createClientEventRequest(req, req.Application, model.Actions["Update"], req.RequestId)
     _, err := NewEvent(event)
 	if err != nil {
@@ -59,10 +59,10 @@ func UpdateClient(req request.UpdateClientRequest) model.Client {
 
 	UpdateClientCache(client)
 
-	return client
+	return CreateResponse("UPDATED", client)
 }
 
-func DeleteClient(req request.DeleteClientRequest) {
+func DeleteClient(req request.DeleteClientRequest) model.ServiceResponse {
 	event := createClientEventRequest(req, req.Application, model.Actions["Delete"], req.RequestId)
     _, err := NewEvent(event)
 	if err != nil {
@@ -72,4 +72,6 @@ func DeleteClient(req request.DeleteClientRequest) {
 	client := GetClient(req.ClientId)
 
 	RemoveClientCache(client)
+
+    return CreateResponse("DELETED", nil)
 }

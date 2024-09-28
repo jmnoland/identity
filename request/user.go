@@ -30,3 +30,10 @@ type DeleteUserRequest struct {
     ClientId        uuid.UUID
 }
 
+type GetUserRequest struct {
+    UserId          uuid.UUID
+    UserName        string
+
+    ClientId        uuid.UUID
+}
+

@@ -27,3 +27,8 @@ type DeleteClientRequest struct {
     ClientId        uuid.UUID
 }
 
+type GetClientRequest struct {
+    ClientId        uuid.UUID
+    ClientName      string
+}
+

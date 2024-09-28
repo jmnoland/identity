@@ -46,7 +46,7 @@ func CreateUser(req request.CreateUserRequest) model.ServiceResponse {
 	return CreateResponse("CREATED", client)
 }
 
-func UpdateUser(req request.UpdateUserRequest) model.User {
+func UpdateUser(req request.UpdateUserRequest) model.ServiceResponse {
 	event := createUserEventRequest(req, req.Application, model.Actions["Update"], req.RequestId)
     _, err := NewEvent(event)
 	if err != nil {
@@ -59,10 +59,10 @@ func UpdateUser(req request.UpdateUserRequest) model.User {
 
 	UpdateUserCache(client)
 
-	return client
+	return CreateResponse("UPDATED", client)
 }
 
-func DeleteUser(req request.DeleteUserRequest) {
+func DeleteUser(req request.DeleteUserRequest) model.ServiceResponse {
 	event := createUserEventRequest(req, req.Application, model.Actions["Delete"], req.RequestId)
     _, err := NewEvent(event)
 	if err != nil {
@@ -72,5 +72,7 @@ func DeleteUser(req request.DeleteUserRequest) {
 	client := GetUser(req.ClientId, req.UserId)
 
 	RemoveUserCache(client)
+
+    return CreateResponse("DELETED", nil)
 }
 
