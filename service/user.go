@@ -26,12 +26,6 @@ func CreateUser(req request.CreateUserRequest) model.ServiceResponse {
         return CreateResponse("BADREQUEST", existingUser)
     }
 
-	eventReq := createUserEventRequest(req, req.Application, model.Actions["Create"], req.RequestId)
-	event, err := NewEvent(eventReq)
-	if err != nil {
-		panic(err)
-	}
-
 	client := model.User{
 		ID:          req.UserId,
 		Name:        req.UserName,
@@ -41,6 +35,11 @@ func CreateUser(req request.CreateUserRequest) model.ServiceResponse {
 
 	AddUserCache(client)
 
+	eventReq := createUserEventRequest(req, req.Application, model.Actions["Create"], req.RequestId)
+	event, err := NewEvent(eventReq)
+	if err != nil {
+		panic(err)
+	}
     repository.AddEvent(*event)
 
 	return CreateResponse("CREATED", client)

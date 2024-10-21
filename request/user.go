@@ -11,6 +11,8 @@ type CreateUserRequest struct {
     UserId          uuid.UUID
     UserName        string
     ClientId        uuid.UUID
+
+    Credential      CreateCredentialRequest
 }
 
 type UpdateUserRequest struct {

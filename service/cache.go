@@ -5,7 +5,11 @@ import (
     "github.com/jmnoland/identity/model"
 )
 
-var clients = map[uuid.UUID]model.Client{}
+var clients = map[uuid.UUID]model.Client{
+    uuid.MustParse("00000000-0000-0000-0000-000000000000"): {
+        ID: uuid.MustParse("00000000-0000-0000-0000-000000000000"),
+    },
+}
 
 func AddClientCache(client model.Client) {
     clients[client.ID] = client;
@@ -20,7 +24,7 @@ func UpdateClientCache(client model.Client) {
 }
 
 func GetClient(id uuid.UUID) (model.Client) {
-    return clients[id]
+    return clients[id];
 }
 
 func GetClientByName(name string) (model.Client) {
