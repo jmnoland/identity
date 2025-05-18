@@ -26,14 +26,14 @@ func CreateUser(req request.CreateUserRequest) model.ServiceResponse {
         return CreateResponse("BADREQUEST", existingUser)
     }
 
-	client := model.User{
+	user := model.User{
 		ID:          req.UserId,
 		Name:        req.UserName,
 		Application: req.Application,
 		CreatedAt:   time.Now(),
 	}
 
-	AddUserCache(client)
+	AddUserCache(user)
 
 	eventReq := createUserEventRequest(req, req.Application, model.Actions["Create"], req.RequestId)
 	event, err := NewEvent(eventReq)
@@ -42,7 +42,7 @@ func CreateUser(req request.CreateUserRequest) model.ServiceResponse {
 	}
     repository.AddEvent(*event)
 
-	return CreateResponse("CREATED", client)
+	return CreateResponse("CREATED", user)
 }
 
 func UpdateUser(req request.UpdateUserRequest) model.ServiceResponse {
@@ -52,13 +52,13 @@ func UpdateUser(req request.UpdateUserRequest) model.ServiceResponse {
 		panic(err)
 	}
 
-	client := GetUser(req.ClientId, req.UserId)
-	client.Name = req.UserName
-	client.ModifiedAt = time.Now()
+	user := GetUser(req.ClientId, req.UserId)
+	user.Name = req.UserName
+	user.ModifiedAt = time.Now()
 
-	UpdateUserCache(client)
+	UpdateUserCache(user)
 
-	return CreateResponse("UPDATED", client)
+	return CreateResponse("UPDATED", user)
 }
 
 func DeleteUser(req request.DeleteUserRequest) model.ServiceResponse {
@@ -68,9 +68,9 @@ func DeleteUser(req request.DeleteUserRequest) model.ServiceResponse {
 		panic(err)
 	}
 
-	client := GetUser(req.ClientId, req.UserId)
+	user := GetUser(req.ClientId, req.UserId)
 
-	RemoveUserCache(client)
+	RemoveUserCache(user)
 
     return CreateResponse("DELETED", nil)
 }

@@ -11,6 +11,10 @@ var clients = map[uuid.UUID]model.Client{
     },
 }
 
+var credentials = map[string]model.Credential{
+
+}
+
 func AddClientCache(client model.Client) {
     clients[client.ID] = client;
 }
@@ -81,3 +85,13 @@ func GetUserByName(clientId uuid.UUID, name string) (model.User) {
     }
     return model.User{}
 }
+
+func AddCredentialCache(credential model.Credential) {
+    credentials[credential.Identifier] = credential
+}
+
+func GetCredential(identifier string) (model.Credential) {
+    credential := credentials[identifier]
+    return credential;
+}
+
