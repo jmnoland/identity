@@ -20,6 +20,34 @@ func createUserEventRequest(req any, application string, action string, requestI
 	return eventReq
 }
 
+func CreateUserWithCredential(req request.CreateUserWithCredentialRequest) model.ServiceResponse {
+    existingUser := GetUserByName(req.User.ClientId, req.User.UserName)
+    if existingUser.Name != "" {
+        return CreateResponse("BADREQUEST", existingUser)
+    }
+
+	user := model.User{
+		ID:          req.User.UserId,
+		Name:        req.User.UserName,
+		Application: req.User.Application,
+        ClientId:    req.User.ClientId,
+		CreatedAt:   time.Now(),
+	}
+
+	AddUserCache(user)
+
+	eventReq := createUserEventRequest(req.User, req.User.Application, model.Actions["Create"], req.User.RequestId)
+	event, err := NewEvent(eventReq)
+	if err != nil {
+		panic(err)
+	}
+    repository.AddEvent(*event)
+
+    CreateCredential(req.Credential)
+
+	return CreateResponse("CREATED", user)
+}
+
 func CreateUser(req request.CreateUserRequest) model.ServiceResponse {
     existingUser := GetUserByName(req.ClientId, req.UserName)
     if existingUser.Name != "" {
@@ -30,6 +58,7 @@ func CreateUser(req request.CreateUserRequest) model.ServiceResponse {
 		ID:          req.UserId,
 		Name:        req.UserName,
 		Application: req.Application,
+        ClientId:    req.ClientId,
 		CreatedAt:   time.Now(),
 	}
 

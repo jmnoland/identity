@@ -4,6 +4,11 @@ import (
     "github.com/google/uuid"
 )
 
+type CreateUserWithCredentialRequest struct {
+    User            CreateUserRequest
+    Credential      CreateCredentialRequest
+}
+
 type CreateUserRequest struct {
     Application     string
     RequestId       uuid.UUID
@@ -11,8 +16,6 @@ type CreateUserRequest struct {
     UserId          uuid.UUID
     UserName        string
     ClientId        uuid.UUID
-
-    Credential      CreateCredentialRequest
 }
 
 type UpdateUserRequest struct {

@@ -31,10 +31,16 @@ func NewEvent(req request.EventRequest) (*model.Event, error) {
 }
 
 func validateEvent(req request.EventRequest) (bool) {
-    if req.Action != "" {
-        return true;
+    if req.Action == "" {
+        return false;
+    }
+    if req.Type == "" {
+        return false;
+    }
+    if req.Application == "" {
+        return false;
     }
 
-    return false;
+    return true;
 }
 

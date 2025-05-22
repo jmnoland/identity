@@ -24,7 +24,7 @@ func createCredentialEventRequest(req any, app string, action string, requestId 
 
 func CreateCredential(req request.CreateCredentialRequest) model.ServiceResponse {
     existingUser := GetUser(req.ClientId, req.UserId)
-    if existingUser.Name != "" {
+    if existingUser.Name == "" {
         return CreateResponse("BADREQUEST", existingUser)
     }
 
@@ -43,7 +43,7 @@ func CreateCredential(req request.CreateCredentialRequest) model.ServiceResponse
         Secret:     hash,
     }
 
-	eventReq := createCredentialEventRequest(req, "", model.Actions["Create"], req.RequestId)
+	eventReq := createCredentialEventRequest(req, req.Application, model.Actions["Create"], req.RequestId)
 	event, err := NewEvent(eventReq)
 	if err != nil {
 		panic(err)

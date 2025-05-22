@@ -7,6 +7,18 @@ import (
 )
 
 func CreateUser(c *gin.Context) {
+    var newUser request.CreateUserWithCredentialRequest
+
+    if err := c.BindJSON(&newUser); err != nil {
+        return
+    }
+
+    response := service.CreateUserWithCredential(newUser)
+
+    SendResponse(c, response)
+}
+
+func CreateUserWithCredential(c *gin.Context) {
     var newUser request.CreateUserRequest
 
     if err := c.BindJSON(&newUser); err != nil {
