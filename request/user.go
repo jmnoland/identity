@@ -2,6 +2,7 @@ package request
 
 import (
     "github.com/google/uuid"
+    "github.com/jmnoland/identity/model"
 )
 
 type CreateUserWithCredentialRequest struct {
@@ -10,7 +11,7 @@ type CreateUserWithCredentialRequest struct {
 }
 
 type CreateUserRequest struct {
-    Application     string
+    Application     []model.Application
     RequestId       uuid.UUID
 
     UserId          uuid.UUID
@@ -19,7 +20,7 @@ type CreateUserRequest struct {
 }
 
 type UpdateUserRequest struct {
-    Application     string
+    Application     []model.Application
     RequestId       uuid.UUID
 
     UserId          uuid.UUID
@@ -28,7 +29,7 @@ type UpdateUserRequest struct {
 }
 
 type DeleteUserRequest struct {
-    Application     string
+    Application     []model.Application
     RequestId       uuid.UUID
 
     UserId          uuid.UUID

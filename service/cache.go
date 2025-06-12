@@ -15,6 +15,20 @@ var credentials = map[string]model.Credential{
 
 }
 
+var sessions = map[uuid.UUID]model.Session{
+
+}
+
+func AddSessionCache(session model.Session) {
+    sessions[session.ID] = session;
+}
+func RemoveSessionCache(session model.Session) {
+    delete(sessions, session.ID)
+}
+func GetSessionCache(id uuid.UUID) (model.Session) {
+    return sessions[id]
+}
+
 func AddClientCache(client model.Client) {
     clients[client.ID] = client;
 }
@@ -56,12 +70,24 @@ func RemoveUserCache(user model.User) {
     clients[user.ClientId] = client
 }
 
+func addUpdateApplicationToUser(exists model.User, update model.Application) {
+    for i := range exists.Applications {
+        if (exists.Applications[i].ID == update.ID) {
+            exists.Applications[i].Name = update.Name
+            exists.Applications[i].Permissions = append(exists.Applications[i].Permissions, update.Permissions...)
+            return
+        }
+    }
+    exists.Applications = append(exists.Applications, update)
+}
+
 func UpdateUserCache(user model.User) {
     client := clients[user.ClientId]
     usrs := client.Users
     for i := range usrs {
         if usrs[i].ID == user.ID {
             usrs[i].Name = user.Name
+            addUpdateApplicationToUser(usrs[i], user.Applications[0])
         }
     }
     clients[user.ClientId] = client

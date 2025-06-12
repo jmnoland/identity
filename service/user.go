@@ -8,9 +8,9 @@ import (
 	"time"
 )
 
-func createUserEventRequest(req any, application string, action string, requestId uuid.UUID) request.EventRequest {
+func createUserEventRequest(req any, application model.Application, action string, requestId uuid.UUID) request.EventRequest {
 	eventReq := request.EventRequest{
-		Application:     application,
+		Application:     application.Name,
 		Type:            "User",
 		Action:          action,
 		ActionRequestId: requestId,
@@ -29,14 +29,14 @@ func CreateUserWithCredential(req request.CreateUserWithCredentialRequest) model
 	user := model.User{
 		ID:          req.User.UserId,
 		Name:        req.User.UserName,
-		Application: req.User.Application,
+		Applications:req.User.Application,
         ClientId:    req.User.ClientId,
 		CreatedAt:   time.Now(),
 	}
 
 	AddUserCache(user)
 
-	eventReq := createUserEventRequest(req.User, req.User.Application, model.Actions["Create"], req.User.RequestId)
+	eventReq := createUserEventRequest(req.User, req.User.Application[0], model.Actions["Create"], req.User.RequestId)
 	event, err := NewEvent(eventReq)
 	if err != nil {
 		panic(err)
@@ -57,14 +57,14 @@ func CreateUser(req request.CreateUserRequest) model.ServiceResponse {
 	user := model.User{
 		ID:          req.UserId,
 		Name:        req.UserName,
-		Application: req.Application,
+		Applications:req.Application,
         ClientId:    req.ClientId,
 		CreatedAt:   time.Now(),
 	}
 
 	AddUserCache(user)
 
-	eventReq := createUserEventRequest(req, req.Application, model.Actions["Create"], req.RequestId)
+	eventReq := createUserEventRequest(req, req.Application[0], model.Actions["Create"], req.RequestId)
 	event, err := NewEvent(eventReq)
 	if err != nil {
 		panic(err)
@@ -75,7 +75,7 @@ func CreateUser(req request.CreateUserRequest) model.ServiceResponse {
 }
 
 func UpdateUser(req request.UpdateUserRequest) model.ServiceResponse {
-	event := createUserEventRequest(req, req.Application, model.Actions["Update"], req.RequestId)
+	event := createUserEventRequest(req, req.Application[0], model.Actions["Update"], req.RequestId)
     _, err := NewEvent(event)
 	if err != nil {
 		panic(err)
@@ -91,7 +91,7 @@ func UpdateUser(req request.UpdateUserRequest) model.ServiceResponse {
 }
 
 func DeleteUser(req request.DeleteUserRequest) model.ServiceResponse {
-	event := createUserEventRequest(req, req.Application, model.Actions["Delete"], req.RequestId)
+	event := createUserEventRequest(req, req.Application[0], model.Actions["Delete"], req.RequestId)
     _, err := NewEvent(event)
 	if err != nil {
 		panic(err)
