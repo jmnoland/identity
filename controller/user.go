@@ -7,18 +7,6 @@ import (
 )
 
 func CreateUser(c *gin.Context) {
-    var newUser request.CreateUserWithCredentialRequest
-
-    if err := c.BindJSON(&newUser); err != nil {
-        return
-    }
-
-    response := service.CreateUserWithCredential(newUser)
-
-    SendResponse(c, response)
-}
-
-func CreateUserWithCredential(c *gin.Context) {
     var newUser request.CreateUserRequest
 
     if err := c.BindJSON(&newUser); err != nil {
@@ -30,10 +18,24 @@ func CreateUserWithCredential(c *gin.Context) {
     SendResponse(c, response)
 }
 
+func CreateUserWithCredential(c *gin.Context) {
+    var newUser request.CreateUserWithCredentialRequest
+
+    if err := c.BindJSON(&newUser); err != nil {
+        SendResponse(c, service.CreateResponse("BADREQUEST", err))
+        return
+    }
+
+    response := service.CreateUserWithCredential(newUser)
+
+    SendResponse(c, response)
+}
+
 func DeleteUser(c *gin.Context) {
     var removeRequest request.DeleteUserRequest
 
     if err := c.BindJSON(&removeRequest); err != nil {
+        SendResponse(c, service.CreateResponse("BADREQUEST", err))
         return
     }
 
@@ -46,6 +48,7 @@ func UpdateUser(c *gin.Context) {
     var updateRequest request.UpdateUserRequest
 
     if err := c.BindJSON(&updateRequest); err != nil {
+        SendResponse(c, service.CreateResponse("BADREQUEST", err))
         return
     }
 
@@ -58,11 +61,12 @@ func GetUser(c *gin.Context) {
     var getRequest request.GetUserRequest
 
     if err := c.BindJSON(&getRequest); err != nil {
+        SendResponse(c, service.CreateResponse("BADREQUEST", err))
         return
     }
 
     client := service.GetUser(getRequest.ClientId, getRequest.UserId)
-    response := service.CreateResponse("FOUND", client)
+    response := service.CreateResponse("OK", client)
 
     SendResponse(c, response)
 }
@@ -71,11 +75,12 @@ func GetUserByName(c *gin.Context) {
     var getRequest request.GetUserRequest
 
     if err := c.BindJSON(&getRequest); err != nil {
+        SendResponse(c, service.CreateResponse("BADREQUEST", err))
         return
     }
 
     client := service.GetUserByName(getRequest.ClientId, getRequest.UserName)
-    response := service.CreateResponse("FOUND", client)
+    response := service.CreateResponse("OK", client)
 
     SendResponse(c, response)
 }

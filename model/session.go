@@ -7,6 +7,7 @@ import (
 
 type Session struct {
     ID              uuid.UUID
+    UserId          uuid.UUID
 
     Permissions     []string
 

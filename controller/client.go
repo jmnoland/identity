@@ -10,6 +10,7 @@ func CreateClient(c *gin.Context) {
     var newClient request.CreateClientRequest
 
     if err := c.BindJSON(&newClient); err != nil {
+        SendResponse(c, service.CreateResponse("BADREQUEST", err))
         return
     }
 
@@ -22,6 +23,7 @@ func DeleteClient(c *gin.Context) {
     var removeRequest request.DeleteClientRequest
 
     if err := c.BindJSON(&removeRequest); err != nil {
+        SendResponse(c, service.CreateResponse("BADREQUEST", err))
         return
     }
 
@@ -34,6 +36,7 @@ func UpdateClient(c *gin.Context) {
     var updateRequest request.UpdateClientRequest
 
     if err := c.BindJSON(&updateRequest); err != nil {
+        SendResponse(c, service.CreateResponse("BADREQUEST", err))
         return
     }
 
@@ -46,11 +49,12 @@ func GetClient(c *gin.Context) {
     var getRequest request.GetClientRequest
 
     if err := c.BindJSON(&getRequest); err != nil {
+        SendResponse(c, service.CreateResponse("BADREQUEST", err))
         return
     }
 
     client := service.GetClient(getRequest.ClientId)
-    response := service.CreateResponse("FOUND", client)
+    response := service.CreateResponse("OK", client)
 
     SendResponse(c, response)
 }
@@ -59,11 +63,12 @@ func GetClientByName(c *gin.Context) {
     var getRequest request.GetClientRequest
 
     if err := c.BindJSON(&getRequest); err != nil {
+        SendResponse(c, service.CreateResponse("BADREQUEST", err))
         return
     }
 
     client := service.GetClientByName(getRequest.ClientName)
-    response := service.CreateResponse("FOUND", client)
+    response := service.CreateResponse("OK", client)
 
     SendResponse(c, response)
 }

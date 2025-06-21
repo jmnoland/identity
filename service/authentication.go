@@ -28,6 +28,10 @@ func AuthenticateSession(req request.AuthenticateRequest) (model.ServiceResponse
     outputHash := CreateSecretHashFromExisting(req.Secret, parts[1])
 
     if (outputHash == parts[0]) {
+        existingSession := GetSessionForUserId(cred.UserId)
+        if (time.Now().Before(existingSession.ExpiresAt)) {
+            return CreateResponse("OK", existingSession)
+        }
         usr := GetUser(cred.ClientId, cred.UserId)
 
         hoursToAdd, _ := strconv.ParseInt(expireHours, 10, 32)
@@ -35,12 +39,36 @@ func AuthenticateSession(req request.AuthenticateRequest) (model.ServiceResponse
 
         sess := model.Session{
             ID:             uuid.New(),
+            UserId:         usr.ID,
             Permissions:    findUserPermissions(usr.Applications, req.Application),
             ExpiresAt:      expiresAt,
         }
         AddSessionCache(sess)
 
-        return CreateResponse("CREATED", sess)
+        return CreateResponse("OK", sess)
+    }
+    return CreateResponse("BADREQUEST", req)
+}
+
+func AuthenticateApiKey(req request.AuthenticateRequest) (model.ServiceResponse) {
+    cred := GetCredential(req.Identifier)
+
+    parts := strings.Split(cred.Secret, ":")
+    outputHash := CreateSecretHashFromExisting(req.Secret, parts[1])
+
+    if (outputHash == parts[0]) {
+        usr := GetUser(cred.ClientId, cred.UserId)
+
+        return CreateResponse("OK", usr)
+    }
+    return CreateResponse("BADREQUEST", req)
+}
+
+func ValidateSession(req request.AuthenticateSession) (model.ServiceResponse) {
+    session := GetSessionCache(req.SessionId)
+
+    if (time.Now().Before(session.ExpiresAt)) {
+        return CreateResponse("OK", session)
     }
     return CreateResponse("BADREQUEST", req)
 }

@@ -22,10 +22,17 @@ func main() {
     r.GET("/clientName", controller.GetClientByName)
     
     r.POST("/user", controller.CreateUser)
+    r.POST("/user/credential", controller.CreateUserWithCredential)
     r.POST("/user/update", controller.UpdateUser)
     r.DELETE("/user", controller.DeleteUser)
     r.GET("/user", controller.GetUser)
     r.GET("/userName", controller.GetUserByName)
+
+    r.POST("/auth/session", controller.AuthenticateSession)
+    r.POST("/auth/key", controller.AuthenticateApiKey)
+    r.POST("/auth/session/validate", controller.ValidateSession)
+
+    r.GET("/cache", controller.GetCurrentCache)
 
     fmt.Println("Running");
 

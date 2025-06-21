@@ -5,69 +5,79 @@ import (
     "github.com/jmnoland/identity/model"
 )
 
-var clients = map[uuid.UUID]model.Client{
-    uuid.MustParse("00000000-0000-0000-0000-000000000000"): {
-        ID: uuid.MustParse("00000000-0000-0000-0000-000000000000"),
+var cache = model.Cache{
+    Clients: map[uuid.UUID]model.Client{
+        uuid.MustParse("00000000-0000-0000-0000-000000000000"): {
+            ID: uuid.MustParse("00000000-0000-0000-0000-000000000000"),
+        },
+    },
+    Credentials: map[string]model.Credential{
+    },
+    Sessions: map[uuid.UUID]model.Session{
     },
 }
 
-var credentials = map[string]model.Credential{
-
-}
-
-var sessions = map[uuid.UUID]model.Session{
-
+func GetCurrentCache() (model.Cache) {
+    return cache
 }
 
 func AddSessionCache(session model.Session) {
-    sessions[session.ID] = session;
+    cache.Sessions[session.ID] = session;
 }
 func RemoveSessionCache(session model.Session) {
-    delete(sessions, session.ID)
+    delete(cache.Sessions, session.ID)
 }
 func GetSessionCache(id uuid.UUID) (model.Session) {
-    return sessions[id]
+    return cache.Sessions[id]
+}
+func GetSessionForUserId(userId uuid.UUID) (model.Session) {
+    for k, v := range cache.Sessions {
+        if v.UserId == userId {
+            return cache.Sessions[k]
+        }
+    }
+    return model.Session{}
 }
 
 func AddClientCache(client model.Client) {
-    clients[client.ID] = client;
+    cache.Clients[client.ID] = client;
 }
 
 func RemoveClientCache(client model.Client) {
-    delete(clients, client.ID);
+    delete(cache.Clients, client.ID);
 }
 
 func UpdateClientCache(client model.Client) {
-    clients[client.ID] = client;
+    cache.Clients[client.ID] = client;
 }
 
 func GetClient(id uuid.UUID) (model.Client) {
-    return clients[id];
+    return cache.Clients[id];
 }
 
 func GetClientByName(name string) (model.Client) {
-    for k, v := range clients {
+    for k, v := range cache.Clients {
         if v.Name == name {
-            return clients[k]
+            return cache.Clients[k]
         }
     }
     return model.Client{}
 }
 
 func AddUserCache(user model.User) {
-    client := clients[user.ClientId]
+    client := cache.Clients[user.ClientId]
     client.Users = append(client.Users, user)
-    clients[user.ClientId] = client
+    cache.Clients[user.ClientId] = client
 }
 
 func RemoveUserCache(user model.User) {
-    client := clients[user.ClientId]
+    client := cache.Clients[user.ClientId]
     for i := range client.Users {
         if client.Users[i].ID == user.ID {
             client.Users = append(client.Users[:i], client.Users[i+1:]...)
         }
     }
-    clients[user.ClientId] = client
+    cache.Clients[user.ClientId] = client
 }
 
 func addUpdateApplicationToUser(exists model.User, update model.Application) {
@@ -82,7 +92,7 @@ func addUpdateApplicationToUser(exists model.User, update model.Application) {
 }
 
 func UpdateUserCache(user model.User) {
-    client := clients[user.ClientId]
+    client := cache.Clients[user.ClientId]
     usrs := client.Users
     for i := range usrs {
         if usrs[i].ID == user.ID {
@@ -90,20 +100,20 @@ func UpdateUserCache(user model.User) {
             addUpdateApplicationToUser(usrs[i], user.Applications[0])
         }
     }
-    clients[user.ClientId] = client
+    cache.Clients[user.ClientId] = client
 }
 
 func GetUser(clientId uuid.UUID, id uuid.UUID) (model.User) {
-    for i := range clients[clientId].Users {
-        if clients[clientId].Users[i].ID == id {
-            return clients[clientId].Users[i]
+    for i := range cache.Clients[clientId].Users {
+        if cache.Clients[clientId].Users[i].ID == id {
+            return cache.Clients[clientId].Users[i]
         }
     }
     return model.User{}
 }
 
 func GetUserByName(clientId uuid.UUID, name string) (model.User) {
-    client := clients[clientId]
+    client := cache.Clients[clientId]
     for i := range client.Users {
         if client.Users[i].Name == name {
             return client.Users[i]
@@ -113,11 +123,11 @@ func GetUserByName(clientId uuid.UUID, name string) (model.User) {
 }
 
 func AddCredentialCache(credential model.Credential) {
-    credentials[credential.Identifier] = credential
+    cache.Credentials[credential.Identifier] = credential
 }
 
 func GetCredential(identifier string) (model.Credential) {
-    credential := credentials[identifier]
+    credential := cache.Credentials[identifier]
     return credential;
 }
 
