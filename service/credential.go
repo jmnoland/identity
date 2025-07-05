@@ -20,7 +20,7 @@ var memoryStr = os.Getenv("IDENTITY_MEMORY")
 func createCredentialEventRequest(req any, app string, action string, requestId uuid.UUID) request.EventRequest {
 	eventReq := request.EventRequest{
 		Application:     app,
-		Type:            "Credential",
+		Type:            model.EventTypes["Credential"],
 		Action:          action,
 		ActionRequestId: requestId,
 		Request:         req,
@@ -29,7 +29,7 @@ func createCredentialEventRequest(req any, app string, action string, requestId 
 	return eventReq
 }
 
-func CreateCredential(req request.CreateCredentialRequest) model.ServiceResponse {
+func CreateCredential(req request.CreateCredentialRequest, createEvent bool) model.ServiceResponse {
     existingUser := GetUser(req.ClientId, req.UserId)
     if existingUser.Name == "" {
         return CreateResponse("BADREQUEST", existingUser)
@@ -59,7 +59,9 @@ func CreateCredential(req request.CreateCredentialRequest) model.ServiceResponse
 
 	AddCredentialCache(credential)
 
-    repository.AddEvent(*event)
+    if createEvent {
+        repository.AddEvent(*event)
+    }
 
 	return CreateResponse("CREATED", credential)
 }

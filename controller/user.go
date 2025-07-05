@@ -6,6 +6,8 @@ import (
     "github.com/jmnoland/identity/service"
 )
 
+const createUserEvents bool = true;
+
 func CreateUser(c *gin.Context) {
     var newUser request.CreateUserRequest
 
@@ -13,7 +15,7 @@ func CreateUser(c *gin.Context) {
         return
     }
 
-    response := service.CreateUser(newUser)
+    response := service.CreateUser(newUser, createUserEvents)
 
     SendResponse(c, response)
 }
@@ -26,7 +28,7 @@ func CreateUserWithCredential(c *gin.Context) {
         return
     }
 
-    response := service.CreateUserWithCredential(newUser)
+    response := service.CreateUserWithCredential(newUser, createUserEvents)
 
     SendResponse(c, response)
 }
@@ -39,7 +41,7 @@ func DeleteUser(c *gin.Context) {
         return
     }
 
-    response := service.DeleteUser(removeRequest)
+    response := service.DeleteUser(removeRequest, createUserEvents)
 
     SendResponse(c, response)
 }
@@ -52,7 +54,7 @@ func UpdateUser(c *gin.Context) {
         return
     }
 
-    response := service.UpdateUser(updateRequest)
+    response := service.UpdateUser(updateRequest, createUserEvents)
 
     SendResponse(c, response)
 }

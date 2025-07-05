@@ -6,6 +6,8 @@ import (
     "github.com/jmnoland/identity/service"
 )
 
+const createClientEvents bool = true;
+
 func CreateClient(c *gin.Context) {
     var newClient request.CreateClientRequest
 
@@ -14,7 +16,7 @@ func CreateClient(c *gin.Context) {
         return
     }
 
-    response := service.CreateClient(newClient)
+    response := service.CreateClient(newClient, createClientEvents)
 
     SendResponse(c, response)
 }
@@ -27,7 +29,7 @@ func DeleteClient(c *gin.Context) {
         return
     }
 
-    response := service.DeleteClient(removeRequest)
+    response := service.DeleteClient(removeRequest, createClientEvents)
     
     SendResponse(c, response)
 }
@@ -40,7 +42,7 @@ func UpdateClient(c *gin.Context) {
         return
     }
 
-    response := service.UpdateClient(updateRequest)
+    response := service.UpdateClient(updateRequest, createClientEvents)
 
     SendResponse(c, response)
 }

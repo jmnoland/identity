@@ -14,7 +14,7 @@ import (
 var uri = os.Getenv("MONGO_DB_CONNECTION")
 var database = os.Getenv("MONGO_DB_NAME")
 var serverAPI = options.ServerAPI(options.ServerAPIVersion1)
-var opts = options.Client().ApplyURI(uri).SetServerAPIOptions(serverAPI)
+var opts = options.Client().ApplyURI(uri).SetServerAPIOptions(serverAPI).SetBSONOptions(&options.BSONOptions{ DefaultDocumentM: true })
 
 func GetEvents() ([]model.Event) {
     client, err := mongo.Connect(context.TODO(), opts)

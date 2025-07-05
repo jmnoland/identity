@@ -5,6 +5,7 @@ import (
 
     "github.com/gin-gonic/gin"
     "github.com/jmnoland/identity/controller"
+    "github.com/jmnoland/identity/service"
 )
 
 func main() {
@@ -34,7 +35,11 @@ func main() {
 
     r.GET("/cache", controller.GetCurrentCache)
 
-    fmt.Println("Running");
+    fmt.Println("Event processing")
+
+    service.StartupProcessEvents()
+
+    fmt.Println("Running")
 
     r.Run()
 }

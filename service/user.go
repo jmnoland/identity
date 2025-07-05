@@ -11,7 +11,7 @@ import (
 func createUserEventRequest(req any, application model.Application, action string, requestId uuid.UUID) request.EventRequest {
 	eventReq := request.EventRequest{
 		Application:     application.Name,
-		Type:            "User",
+		Type:            model.EventTypes["User"],
 		Action:          action,
 		ActionRequestId: requestId,
 		Request:         req,
@@ -20,7 +20,7 @@ func createUserEventRequest(req any, application model.Application, action strin
 	return eventReq
 }
 
-func CreateUserWithCredential(req request.CreateUserWithCredentialRequest) model.ServiceResponse {
+func CreateUserWithCredential(req request.CreateUserWithCredentialRequest, createEvent bool) model.ServiceResponse {
     existingUser := GetUserByName(req.User.ClientId, req.User.UserName)
     if existingUser.Name != "" {
         return CreateResponse("BADREQUEST", existingUser)
@@ -41,14 +41,17 @@ func CreateUserWithCredential(req request.CreateUserWithCredentialRequest) model
 	if err != nil {
 		panic(err)
 	}
-    repository.AddEvent(*event)
 
-    CreateCredential(req.Credential)
+    if createEvent {
+        repository.AddEvent(*event)
+    }
+
+    CreateCredential(req.Credential, createEvent)
 
 	return CreateResponse("CREATED", user)
 }
 
-func CreateUser(req request.CreateUserRequest) model.ServiceResponse {
+func CreateUser(req request.CreateUserRequest, createEvent bool) model.ServiceResponse {
     existingUser := GetUserByName(req.ClientId, req.UserName)
     if existingUser.Name != "" {
         return CreateResponse("BADREQUEST", existingUser)
@@ -69,14 +72,17 @@ func CreateUser(req request.CreateUserRequest) model.ServiceResponse {
 	if err != nil {
 		panic(err)
 	}
-    repository.AddEvent(*event)
+
+    if createEvent {
+        repository.AddEvent(*event)
+    }
 
 	return CreateResponse("CREATED", user)
 }
 
-func UpdateUser(req request.UpdateUserRequest) model.ServiceResponse {
-	event := createUserEventRequest(req, req.Application[0], model.Actions["Update"], req.RequestId)
-    _, err := NewEvent(event)
+func UpdateUser(req request.UpdateUserRequest, createEvent bool) model.ServiceResponse {
+	eventReq := createUserEventRequest(req, req.Application[0], model.Actions["Update"], req.RequestId)
+    event, err := NewEvent(eventReq)
 	if err != nil {
 		panic(err)
 	}
@@ -87,12 +93,16 @@ func UpdateUser(req request.UpdateUserRequest) model.ServiceResponse {
 
 	UpdateUserCache(user)
 
+    if createEvent {
+        repository.AddEvent(*event)
+    }
+
 	return CreateResponse("UPDATED", user)
 }
 
-func DeleteUser(req request.DeleteUserRequest) model.ServiceResponse {
-	event := createUserEventRequest(req, req.Application[0], model.Actions["Delete"], req.RequestId)
-    _, err := NewEvent(event)
+func DeleteUser(req request.DeleteUserRequest, createEvent bool) model.ServiceResponse {
+	eventReq := createUserEventRequest(req, req.Application[0], model.Actions["Delete"], req.RequestId)
+    event, err := NewEvent(eventReq)
 	if err != nil {
 		panic(err)
 	}
@@ -100,6 +110,10 @@ func DeleteUser(req request.DeleteUserRequest) model.ServiceResponse {
 	user := GetUser(req.ClientId, req.UserId)
 
 	RemoveUserCache(user)
+
+    if createEvent {
+        repository.AddEvent(*event)
+    }
 
     return CreateResponse("DELETED", nil)
 }

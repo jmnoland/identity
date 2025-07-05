@@ -11,7 +11,7 @@ import (
 func createClientEventRequest(req any, application string, action string, requestId uuid.UUID) request.EventRequest {
 	eventReq := request.EventRequest{
 		Application:     application,
-		Type:            "Client",
+		Type:            model.EventTypes["Client"],
 		Action:          action,
 		ActionRequestId: requestId,
 		Request:         req,
@@ -20,7 +20,7 @@ func createClientEventRequest(req any, application string, action string, reques
 	return eventReq
 }
 
-func CreateClient(req request.CreateClientRequest) model.ServiceResponse {
+func CreateClient(req request.CreateClientRequest, createEvent bool) model.ServiceResponse {
     existingClient := GetClientByName(req.ClientName)
     if existingClient.Name != "" {
         return CreateResponse("BADREQUEST", existingClient)
@@ -41,14 +41,16 @@ func CreateClient(req request.CreateClientRequest) model.ServiceResponse {
 
 	AddClientCache(client)
 
-    repository.AddEvent(*event)
+    if createEvent {
+        repository.AddEvent(*event)
+    }
 
 	return CreateResponse("CREATED", client)
 }
 
-func UpdateClient(req request.UpdateClientRequest) model.ServiceResponse {
-	event := createClientEventRequest(req, req.Application, model.Actions["Update"], req.RequestId)
-    _, err := NewEvent(event)
+func UpdateClient(req request.UpdateClientRequest, createEvent bool) model.ServiceResponse {
+	eventReq := createClientEventRequest(req, req.Application, model.Actions["Update"], req.RequestId)
+    event, err := NewEvent(eventReq)
 	if err != nil {
 		panic(err)
 	}
@@ -59,12 +61,16 @@ func UpdateClient(req request.UpdateClientRequest) model.ServiceResponse {
 
 	UpdateClientCache(client)
 
+    if createEvent {
+        repository.AddEvent(*event)
+    }
+
 	return CreateResponse("UPDATED", client)
 }
 
-func DeleteClient(req request.DeleteClientRequest) model.ServiceResponse {
-	event := createClientEventRequest(req, req.Application, model.Actions["Delete"], req.RequestId)
-    _, err := NewEvent(event)
+func DeleteClient(req request.DeleteClientRequest, createEvent bool) model.ServiceResponse {
+	eventReq := createClientEventRequest(req, req.Application, model.Actions["Delete"], req.RequestId)
+    event, err := NewEvent(eventReq)
 	if err != nil {
 		panic(err)
 	}
@@ -72,6 +78,10 @@ func DeleteClient(req request.DeleteClientRequest) model.ServiceResponse {
 	client := GetClient(req.ClientId)
 
 	RemoveClientCache(client)
+
+    if createEvent {
+        repository.AddEvent(*event)
+    }
 
     return CreateResponse("DELETED", nil)
 }

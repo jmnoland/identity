@@ -18,3 +18,9 @@ var ResponseTypes = map[string]int{
     "OK": http.StatusOK,
 }
 
+var EventTypes = map[string]string{
+    "Client": "Client",
+    "User": "User",
+    "Credential": "Credential",
+}
+
